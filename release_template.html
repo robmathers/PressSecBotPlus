@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title></title>
+<style>
+    body {
+        margin-left: 2em;
+        margin-right: 2em;
+        margin-top: 1em;
+    }
+    h1, h2, h3 {
+        font-weight: normal;
+        margin-bottom: 0;
+        margin-top: 0;
+        font-size: 12pt;
+    }
+    h1 {
+        text-transform: uppercase;
+        text-align: center;
+
+    }
+    h2 {
+        text-align: center;
+    }
+    h3.release {
+        text-transform: uppercase;
+    }
+    h4 {
+        text-align: center;
+    }
+    hr {
+        height: 1px;
+        background-color: black;
+        border: 0;
+    }
+    hr.end {
+        margin-top: 1em;
+        height: 1em;
+        color: black;
+        background-color: white;
+        text-align: center;
+    }
+    hr.end:after {
+        content: "###";
+        display: inline;
+    }
+</style>
+</head>
+<body>
+<h1>The White House</h1>
+<h2>Office of the Press Secretary</h2>
+<hr>
+<h3 class="release">For Immediate Release</h3>
+<h3>{{ date }}</h3>
+<h4>Statement by the President</h4>
+{{ body }}
+<hr class="end">
+</body>
+</html>
