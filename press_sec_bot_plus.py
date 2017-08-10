@@ -125,7 +125,9 @@ def main():
     config = load_config()
     api = api_from_config(config)
 
-    newest_tweet = api.GetUserTimeline(screen_name='@realDonaldTrump')[0]
+    account_to_follow = config.get('settings', 'account_to_follow')
+
+    newest_tweet = api.GetUserTimeline(screen_name=account_to_follow)[0]
 
     tweet_html = render_tweet_html(newest_tweet)
     image_file = html_to_png(tweet_html)
