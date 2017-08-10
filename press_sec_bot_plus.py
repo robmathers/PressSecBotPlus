@@ -25,6 +25,14 @@ def save_config(config):
         config.write(f)
 
 
+def save_last_tweet(config, tweet_id):
+    if len(update_tweets) > 0:
+        if not config.has_section('saved_state'):
+            config.add_section('saved_state')
+        config.set('saved_state', 'last_tweet_id', str(tweet_id))
+        save_config(config)
+
+
 def api_from_config(config):
     api = twitter.Api(
         consumer_key=config.get('twitter', 'consumer_key'),
@@ -127,6 +135,24 @@ def release_tweet(tweet, api):
         png_file.write(image_data)
         media.insert(0, png_file)
         api.PostUpdate(status=status, media=media)
+
+
+def poll_for_updates(api, account_to_follow, interval=300):
+    """Gets new tweets and releases them every interval (seconds)"""
+    from time import sleep
+
+    latest_tweet_id = GetUserTimeline(screen_name=account_to_follow, count=1, trim_user=True)[0].id
+    while True:
+        new_tweets = GetUserTimeline(screen_name=account_to_follow, since_id=latest_tweet_id, count=200, trim_user=True)
+
+        # process the list in reverse order, to preserve time-order
+        for tweet in new_tweets[::-1]:
+            release_tweet(tweet, api)
+
+        if len(new_tweets) > 0:
+            save_last_tweet(new_tweets[0].id)
+
+        sleep(interval)
 
 
 def main():
