@@ -142,9 +142,9 @@ def poll_for_updates(api, account_to_follow, starting_id=None, interval=300):
     If starting_id is provided, the initial run will start with all tweets since that id, up to a maximum of 200."""
     from time import sleep
 
-    latest_tweet_id = starting_id or GetUserTimeline(screen_name=account_to_follow, count=1, trim_user=True)[0].id
+    latest_tweet_id = starting_id or api.GetUserTimeline(screen_name=account_to_follow, count=1, trim_user=True)[0].id
     while True:
-        new_tweets = GetUserTimeline(screen_name=account_to_follow, since_id=latest_tweet_id, count=200, trim_user=True)
+        new_tweets = api.GetUserTimeline(screen_name=account_to_follow, since_id=latest_tweet_id, count=200, trim_user=True)
 
         # process the list in reverse order, to preserve time-order
         for tweet in new_tweets[::-1]:
