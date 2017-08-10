@@ -78,7 +78,7 @@ def html_to_png(html):
     command += ['-'] # write to stdout
 
     wkhtml_process = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    (output, err) = wkhtml_process.communicate(input=html)
+    (output, err) = wkhtml_process.communicate(input=html.encode('utf-8'))
 
     output = set_retina_dpi(output)
 
