@@ -15,7 +15,9 @@ def load_config():
         print "Couldn't load configuration."
         sys.exit(1)
 
-    global api
+    return config
+
+def api_from_config(config):
     api = twitter.Api(
         consumer_key=config.get('twitter', 'consumer_key'),
         consumer_secret=config.get('twitter', 'consumer_secret'),
@@ -23,6 +25,7 @@ def load_config():
         access_token_secret=config.get('twitter', 'access_token_secret'),
         tweet_mode='extended')
 
+    return api
 
 def render_tweet_html(tweet):
     date_format = '%B %-d, %Y'
@@ -80,7 +83,7 @@ def set_retina_dpi(png_bytes):
 
     return output
 
-def release_tweet(tweet):
+def release_tweet(tweet, api):
     """Formats and publishes a Tweet to the account"""
     tweet_html = render_tweet_html(tweet)
     image_data = html_to_png(tweet_html)
@@ -119,7 +122,9 @@ def release_tweet(tweet):
 
 
 def main():
-    load_config()
+    config = load_config()
+    api = api_from_config(config)
+
     newest_tweet = api.GetUserTimeline(screen_name='@realDonaldTrump')[0]
 
     tweet_html = render_tweet_html(newest_tweet)
