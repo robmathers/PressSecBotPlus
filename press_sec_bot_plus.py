@@ -161,13 +161,12 @@ def main():
 
     account_to_follow = config.get('settings', 'account_to_follow')
 
-    newest_tweet = api.GetUserTimeline(screen_name=account_to_follow)[0]
+    try:
+        last_tweet_id = int(config.get('saved_state', 'last_tweet_id'))
+    except (NoOptionError, NoSectionError) as e:
+        last_tweet_id = None
 
-    tweet_html = render_tweet_html(newest_tweet)
-    image_file = html_to_png(tweet_html)
-
-    print image_file
-
+    poll_for_updates(api, account_to_follow, last_tweet_id)
 
 if __name__ == "__main__":
     main()
