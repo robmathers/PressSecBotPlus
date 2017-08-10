@@ -26,11 +26,10 @@ def save_config(config):
 
 
 def save_last_tweet(config, tweet_id):
-    if len(update_tweets) > 0:
-        if not config.has_section('saved_state'):
-            config.add_section('saved_state')
-        config.set('saved_state', 'last_tweet_id', str(tweet_id))
-        save_config(config)
+    if not config.has_section('saved_state'):
+        config.add_section('saved_state')
+    config.set('saved_state', 'last_tweet_id', str(tweet_id))
+    save_config(config)
 
 
 def api_from_config(config):
