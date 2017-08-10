@@ -150,7 +150,8 @@ def poll_for_updates(api, account_to_follow, starting_id=None, interval=300):
             release_tweet(tweet, api)
 
         if len(new_tweets) > 0:
-            save_last_tweet(load_config(), new_tweets[0].id)
+            latest_tweet_id = new_tweets[0].id
+            save_last_tweet(load_config(), latest_tweet_id)
 
         sleep(interval)
 
