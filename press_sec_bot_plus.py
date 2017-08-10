@@ -109,11 +109,12 @@ def release_tweet(tweet, api):
     # Max 4 photos, or 1 video or 1 GIF
 
     for media_item in tweet.media or []:
+        extra_media_url = 'https://twitter.com/%s/status/%d' % (tweet.user.screen_name, tweet.id)
         if media_item.type == 'video':
-            status = '[Video: %s]' % media_item.expanded_url
+            status = '[Video: %s]' % extra_media_url
 
         if media_item.type == 'animated_gif':
-            status = '[GIF: %s]' % media_item.expanded_url
+            status = '[GIF: %s]' % extra_media_url
 
         if media_item.type == 'photo':
             if len(media) < 3:
@@ -125,7 +126,7 @@ def release_tweet(tweet, api):
             else:
                 if status != '':
                     status += '\n'
-                status += '[Photo: %s]' % media_item.expanded_url
+                status += '[Photo: %s]' % extra_media_url
 
     print status
     print media
@@ -141,9 +142,9 @@ def poll_for_updates(api, account_to_follow, starting_id=None, interval=300):
     If starting_id is provided, the initial run will start with all tweets since that id, up to a maximum of 200."""
     from time import sleep
 
-    latest_tweet_id = starting_id or api.GetUserTimeline(screen_name=account_to_follow, count=1, trim_user=True)[0].id
+    latest_tweet_id = starting_id or api.GetUserTimeline(screen_name=account_to_follow, count=1)[0].id
     while True:
-        new_tweets = api.GetUserTimeline(screen_name=account_to_follow, since_id=latest_tweet_id, count=200, trim_user=True)
+        new_tweets = api.GetUserTimeline(screen_name=account_to_follow, since_id=latest_tweet_id, count=200, include_rts=False)
 
         # process the list in reverse order, to preserve time-order
         for tweet in new_tweets[::-1]:
