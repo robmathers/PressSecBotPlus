@@ -1,21 +1,29 @@
 #!/usr/bin/env python
 import sys
 from datetime import date
-from ConfigParser import SafeConfigParser
+from ConfigParser import SafeConfigParser, NoOptionError, NoSectionError
 from subprocess import Popen, PIPE
 from distutils.spawn import find_executable
 from tempfile import NamedTemporaryFile
 import twitter
 import jinja2
 
+config_file='press_sec_bot_plus.conf'
 
 def load_config():
+    global config_file
     config = SafeConfigParser()
-    if not config.read('press_sec_bot_plus.conf'):
+    if not config.read(config_file):
         print "Couldn't load configuration."
         sys.exit(1)
 
     return config
+
+
+def save_config(config):
+    with open(config_file, 'w') as f:
+        config.write(f)
+
 
 def api_from_config(config):
     api = twitter.Api(
