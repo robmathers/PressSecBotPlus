@@ -44,7 +44,7 @@ def process_tweet_text(tweet):
     for url in tweet.urls:
         text = text.replace(url.url, url.expanded_url)
 
-    for media in tweet.media:
+    for media in tweet.media or []:
         text = text.replace(media.url, '')
 
     return jinja2.Markup(text.replace('\n', '<br>').strip())
@@ -93,7 +93,7 @@ def release_tweet(tweet, api):
 
     # Max 4 photos, or 1 video or 1 GIF
 
-    for media_item in tweet.media:
+    for media_item in tweet.media or []:
         if media_item.type == 'video':
             status = '[Video: %s]' % media_item.expanded_url
 
