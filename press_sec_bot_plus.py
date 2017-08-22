@@ -87,21 +87,6 @@ def html_to_png(html):
     return image
 
 
-def set_retina_dpi(png_bytes):
-    command = ['convert']
-    if not find_executable(command[0]):
-        raise ImportError('ImageMagick not found')
-
-    command += ['-units', 'PixelsPerInch']
-    command += ['-density', '144'] # 144 seems to be required for Preview to show @2x
-    command += ['-', '-'] # read and write to provided file_path
-
-    convert_process = Popen(command, stdin=PIPE, stdout=PIPE)
-    (output, err) = convert_process.communicate(input=png_bytes)
-
-    return output
-
-
 def set_transparent_pixel(image):
     pixel_location = (0,0)
     pixel_colour = (255,255,255,254) # nearly opaque white pixel
