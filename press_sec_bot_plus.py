@@ -27,7 +27,8 @@ def save_config(config):
         config.write(f)
 
 
-def save_last_tweet(config, tweet_id):
+def save_last_tweet(tweet_id):
+    config = load_config()
     if not config.has_section('saved_state'):
         config.add_section('saved_state')
     config.set('saved_state', 'last_tweet_id', str(tweet_id))
@@ -150,7 +151,7 @@ def poll_for_updates(api, account_to_follow, starting_id=None, interval=300):
 
         if len(new_tweets) > 0:
             latest_tweet_id = new_tweets[0].id
-            save_last_tweet(load_config(), latest_tweet_id)
+            save_last_tweet(latest_tweet_id)
 
         sleep(interval)
 
