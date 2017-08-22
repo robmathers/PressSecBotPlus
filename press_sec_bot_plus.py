@@ -81,7 +81,7 @@ def html_to_png(html):
     wkhtml_process = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     (output, err) = wkhtml_process.communicate(input=html.encode('utf-8'))
 
-    image = BytesIO.open(output)
+    image = Image.open(BytesIO(output))
     image = set_transparent_pixel(image)
 
     return image
