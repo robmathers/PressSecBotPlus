@@ -97,12 +97,20 @@ def set_transparent_pixel(image):
     return image
 
 
+def get_status_message():
+    try:
+        message = load_config().get('settings', 'message')
+    except (NoOptionError, NoSectionError) as e:
+        message = ''
+
+    return message
+
 def release_tweet(tweet, api):
     """Formats and publishes a Tweet to the account"""
     tweet_html = render_tweet_html(tweet)
     image = html_to_png(tweet_html)
 
-    status = ''
+    status = get_status_message()
     media = []
 
     # Max 4 photos, or 1 video or 1 GIF
