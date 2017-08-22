@@ -81,9 +81,10 @@ def html_to_png(html):
     wkhtml_process = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     (output, err) = wkhtml_process.communicate(input=html.encode('utf-8'))
 
-    output = set_retina_dpi(output)
+    image = BytesIO.open(output)
+    image = set_transparent_pixel(image)
 
-    return output
+    return image
 
 
 def set_retina_dpi(png_bytes):
@@ -101,8 +102,7 @@ def set_retina_dpi(png_bytes):
     return output
 
 
-def set_transparent_pixel(png_data):
-    image = Image.open(BytesIO.open(png_data))
+def set_transparent_pixel(image):
     pixel_location = (0,0)
     pixel_colour = (255,255,255,254) # nearly opaque white pixel
     image.putpixel(pixel_location, pixel_colour)
