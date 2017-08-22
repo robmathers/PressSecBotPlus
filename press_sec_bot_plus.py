@@ -110,12 +110,16 @@ def release_tweet(tweet, api):
     for media_item in tweet.media or []:
         extra_media_url = 'https://twitter.com/%s/status/%d' % (tweet.user.screen_name, tweet.id)
         if media_item.type == 'video':
-            status = '[Video: %s]' % extra_media_url
+            if status != '':
+                status += '\n'
+            status += '[Video: %s]' % extra_media_url
 
-        if media_item.type == 'animated_gif':
-            status = '[GIF: %s]' % extra_media_url
+        elif media_item.type == 'animated_gif':
+            if status != '':
+                status += '\n'
+            status += '[GIF: %s]' % extra_media_url
 
-        if media_item.type == 'photo':
+        elif media_item.type == 'photo':
             if len(media) < 3:
                 media.append(media_item.media_url_https)
 
