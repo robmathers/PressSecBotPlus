@@ -16,7 +16,7 @@ def load_config():
     global config_file
     config = SafeConfigParser()
     if not config.read(config_file):
-        print "Couldn't load configuration."
+        print("Couldn't load configuration.")
         sys.exit(1)
 
     return config
@@ -126,8 +126,8 @@ def release_tweet(tweet, api):
                     status += '\n'
                 status += '[Photo: %s]' % extra_media_url
 
-    print status
-    print media
+    print(status)
+    print(media)
 
     with NamedTemporaryFile(suffix='.png') as png_file:
         image.save(png_file, format='PNG', dpi=(144,144))
