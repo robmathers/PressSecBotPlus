@@ -44,6 +44,7 @@ def api_from_config(config):
 
     return api
 
+
 def render_tweet_html(tweet):
     date_format = '%B %-d, %Y'
     context = {
@@ -166,6 +167,7 @@ def main():
         last_tweet_id = None
 
     poll_for_updates(api, account_to_follow, last_tweet_id)
+
 
 if __name__ == "__main__":
     main()
