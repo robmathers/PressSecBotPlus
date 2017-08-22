@@ -73,6 +73,7 @@ def html_to_png(html):
     command += ['-f', 'png'] # format output as PNG
     command += ['--zoom', '2'] # retina image
     command += ['--width', '750'] # viewport 750px wide
+    command += ['--enable-local-file-acces'] # allow access to local resources
     command += ['-'] # read from stdin
     command += ['-'] # write to stdout
 
