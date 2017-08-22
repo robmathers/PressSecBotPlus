@@ -98,6 +98,24 @@ def set_retina_dpi(png_bytes):
 
     return output
 
+
+def set_transparent_pixel(png_bytes):
+    """Proper command is convert transparent_test.png -alpha on -fill transparent -draw 'color 0,0 point' transparent_test_dot.png
+    But issues making it work with a subprocess call"""
+    command = ['convert']
+    if not find_executable(command[0]):
+        raise ImportError('ImageMagick not found')
+    command += ['-alpha', 'on']
+    command += ['-fill', 'transparent']
+    command += ['-draw', "color", '0,0', "point"]
+    command += ['-', '-'] # read and write to provided file_path
+
+    convert_process = Popen(command, stdin=PIPE, stdout=PIPE)
+    (output, err) = convert_process.communicate(input=png_bytes)
+
+    return output
+
+
 def release_tweet(tweet, api):
     """Formats and publishes a Tweet to the account"""
     tweet_html = render_tweet_html(tweet)
