@@ -5,8 +5,10 @@ from ConfigParser import SafeConfigParser, NoOptionError, NoSectionError
 from subprocess import Popen, PIPE
 from distutils.spawn import find_executable
 from tempfile import NamedTemporaryFile
+from io import BytesIO
 import twitter
 import jinja2
+from PIL import Image
 
 config_file='press_sec_bot_plus.conf'
 
@@ -73,7 +75,6 @@ def html_to_png(html):
     command += ['-f', 'png'] # format output as PNG
     command += ['--zoom', '2'] # retina image
     command += ['--width', '750'] # viewport 750px wide
-    command += ['--enable-local-file-acces'] # allow access to local resources
     command += ['-'] # read from stdin
     command += ['-'] # write to stdout
 
@@ -100,21 +101,13 @@ def set_retina_dpi(png_bytes):
     return output
 
 
-def set_transparent_pixel(png_bytes):
-    """Proper command is convert transparent_test.png -alpha on -fill transparent -draw 'color 0,0 point' transparent_test_dot.png
-    But issues making it work with a subprocess call"""
-    command = ['convert']
-    if not find_executable(command[0]):
-        raise ImportError('ImageMagick not found')
-    command += ['-alpha', 'on']
-    command += ['-fill', 'transparent']
-    command += ['-draw', "color", '0,0', "point"]
-    command += ['-', '-'] # read and write to provided file_path
+def set_transparent_pixel(png_data):
+    image = Image.open(BytesIO.open(png_data))
+    pixel_location = (0,0)
+    pixel_colour = (255,255,255,254) # nearly opaque white pixel
+    image.putpixel(pixel_location, pixel_colour)
 
-    convert_process = Popen(command, stdin=PIPE, stdout=PIPE)
-    (output, err) = convert_process.communicate(input=png_bytes)
-
-    return output
+    return image
 
 
 def release_tweet(tweet, api):
