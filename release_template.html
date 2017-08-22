@@ -4,10 +4,24 @@
 <meta charset="utf-8" />
 <title></title>
 <style>
+    @font-face {
+        font-family: emoji;
+
+        src: local('Palatino');
+    }
+    @font-face {
+        font-family: emoji;
+
+        src: url('https://github.com/ChALkeR/Symbola-Emoji/raw/master/dist/Symbola-Emoji.woff');
+        unicode-range: U+1F300-1F5FF, U+1F600-1F64F, U+1F680-1F6FF, U+2600-26FF;
+    }
+
     body {
+        font-family: emoji;
         margin-left: 2em;
         margin-right: 2em;
         margin-top: 1em;
+        text-rendering: optimizeLegibility;
     }
     h1, h2, h3 {
         font-weight: normal;
