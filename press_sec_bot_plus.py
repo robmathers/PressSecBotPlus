@@ -113,7 +113,7 @@ def set_transparent_pixel(image):
 def release_tweet(tweet, api):
     """Formats and publishes a Tweet to the account"""
     tweet_html = render_tweet_html(tweet)
-    image_data = html_to_png(tweet_html)
+    image = html_to_png(tweet_html)
 
     status = ''
     media = []
@@ -144,7 +144,7 @@ def release_tweet(tweet, api):
     print media
 
     with NamedTemporaryFile(suffix='.png') as png_file:
-        png_file.write(image_data)
+        image.save(png_file, format='PNG', dpi=(144,144))
         media.insert(0, png_file)
         api.PostUpdate(status=status, media=media)
 
