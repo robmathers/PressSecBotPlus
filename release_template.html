@@ -60,7 +60,13 @@
         content: "###";
         display: inline;
     }
+    .emoji {
+        height: 20px;
+        vertical-align: text-bottom;
+    }
 </style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="jQueryEmoji.min.js"></script>
 </head>
 <body>
 <h1>The White House</h1>
@@ -71,5 +77,10 @@
 <h4>Statement by the President</h4>
 {{ body }}
 <hr class="end">
+<script>
+$(function(){
+	$('body').Emoji();
+});
+</script>
 </body>
 </html>
