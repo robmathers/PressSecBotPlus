@@ -74,7 +74,7 @@ def html_to_png(html):
     # Use a temp file in the current working directory so that wkhtmltoimage handles relative URLs properly
     temp_file = '.temp.html'
     with open(temp_file, 'w') as f:
-        f.write(html)
+        f.write(html.encode('utf-8'))
 
     command = ['wkhtmltoimage']
     if not find_executable(command[0]):
