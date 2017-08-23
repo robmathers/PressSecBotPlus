@@ -1,0 +1,3 @@
+[submodule "jqueryemoji"]
+	path = jqueryemoji
+	url = https://github.com/rodrigopolo/jqueryemoji.git
