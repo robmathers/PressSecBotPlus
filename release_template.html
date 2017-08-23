@@ -5,6 +5,18 @@
 <title></title>
 <link href="./font.css" rel="stylesheet">
 <style>
+    @font-face {
+        font-family: emoji;
+
+        src: local('Palatino');
+    }
+    @font-face {
+        font-family: emoji;
+
+        src: url('https://github.com/ChALkeR/Symbola-Emoji/raw/master/dist/Symbola-Emoji.woff');
+        unicode-range: U+1F300-1F5FF, U+1F600-1F64F, U+1F680-1F6FF, U+2600-26FF;
+    }
+
     body {
         font-family: Palatino, import, serif;
         margin-left: 2em;
@@ -48,7 +60,13 @@
         content: "###";
         display: inline;
     }
+    .emoji {
+        height: 20px;
+        vertical-align: text-bottom;
+    }
 </style>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="jQueryEmoji.min.js"></script>
 </head>
 <body>
 <h1>The White House</h1>
@@ -59,5 +77,10 @@
 <h4>Statement by the President</h4>
 {{ body }}
 <hr class="end">
+<script>
+$(function(){
+	$('body').Emoji();
+});
+</script>
 </body>
 </html>

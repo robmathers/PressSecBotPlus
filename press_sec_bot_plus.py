@@ -5,6 +5,7 @@ from ConfigParser import SafeConfigParser, NoOptionError, NoSectionError
 from subprocess import Popen, PIPE
 from distutils.spawn import find_executable
 from tempfile import NamedTemporaryFile
+import os
 from io import BytesIO
 import twitter
 import jinja2
@@ -70,6 +71,11 @@ def process_tweet_text(tweet):
 
 
 def html_to_png(html):
+    # Use a temp file in the current working directory so that wkhtmltoimage handles relative URLs properly
+    temp_file = '.temp.html'
+    with open(temp_file, 'w') as f:
+        f.write(html)
+
     command = ['wkhtmltoimage']
     if not find_executable(command[0]):
         raise ImportError('%s not found' % command[0])
@@ -77,11 +83,13 @@ def html_to_png(html):
     command += ['-f', 'png'] # format output as PNG
     command += ['--zoom', '2'] # retina image
     command += ['--width', '750'] # viewport 750px wide
-    command += ['-'] # read from stdin
+    command += [temp_file] # read from stdin
     command += ['-'] # write to stdout
 
-    wkhtml_process = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    (output, err) = wkhtml_process.communicate(input=html.encode('utf-8'))
+    wkhtml_process = Popen(command, stdout=PIPE, stderr=PIPE)
+    (output, err) = wkhtml_process.communicate()
+
+    os.remove(temp_file)
 
     image = Image.open(BytesIO(output))
     image = set_transparent_pixel(image)
