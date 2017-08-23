@@ -38,10 +38,10 @@ def save_last_tweet(tweet_id):
 
 def api_from_config(config):
     api = twitter.Api(
-        consumer_key=config.get('twitter', 'consumer_key'),
-        consumer_secret=config.get('twitter', 'consumer_secret'),
-        access_token_key=config.get('twitter', 'access_token_key'),
-        access_token_secret=config.get('twitter', 'access_token_secret'),
+        consumer_key=config.get('twitter_api', 'consumer_key'),
+        consumer_secret=config.get('twitter_api', 'consumer_secret'),
+        access_token_key=config.get('twitter_api', 'access_token_key'),
+        access_token_secret=config.get('twitter_api', 'access_token_secret'),
         tweet_mode='extended')
 
     return api

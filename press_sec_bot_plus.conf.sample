@@ -3,7 +3,7 @@ account_to_follow = @TWITTER_ACCOUNT_HERE
 # message can be blank or removed for no text
 message = TWEET_STATUS_TEXT_HERE
 
-[twitter]
+[twitter_api]
 consumer_key = CONSUMER_KEY_HERE
 consumer_secret = CONSUMER_SECRET_HERE
 access_token_key = ACCESS_TOKEN_KEY_HERE
