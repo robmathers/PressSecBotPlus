@@ -37,10 +37,12 @@ While the major function is similar, there are some specific enhancements over @
 
 ## Installation
 1. Install the requirements:
-    - Download [wkhtmltopdf](https://wkhtmltopdf.org/downloads.html), or install from your package manager
+    - [Download wkhtmltopdf][], or install from your package manager
     - `pip install python-twitter Jinja2 Pillow` (`easy_install` also works)
-2. [Download the source](https://github.com/robmathers/PressSecBotPlus/archive/master.zip) and unzip it (or clone the repository locally)
+2. [Download the source][source] and unzip it (or clone the repository locally)
 3. Set up a Twitter app
+    - Follow the [Python-twitter instructions][app-keys] to create an app and get your API keys and access tokens
+    - If you want to register your app with a different account than the one your bot will tweet from, use the [`get_access_token.py`][token] script to get the access tokens for the bot's account
 4. Copy `press_sec_bot_plus.conf.sample` to `press_sec_bot_plus.conf` and configure per the [Configuration section](#configuration)
 5. *(Optional)* Install a user provided font; [instructions below](#fonts)
 6. *(Optional)* If you wish to back-fill from existing tweets, add a section to the end of the config file, with a tweet ID as shown:
@@ -50,8 +52,13 @@ While the major function is similar, there are some specific enhancements over @
 
     Everything *after* that tweet will be posted (in chronological order), up to a maximum of 200 tweets.
 
+[download wkhtmltopdf]: https://wkhtmltopdf.org/downloads.html
+[source]: https://github.com/robmathers/PressSecBotPlus/archive/master.zip
+[app-keys]: https://python-twitter.readthedocs.io/en/latest/getting_started.html
+[token]: https://github.com/bear/python-twitter/blob/master/get_access_token.py
+
 ## Configuration
-### Twitter API & Accounts
+### Twitter API & accounts
 In the `settings` section of `press_sec_bot_plus.conf`:
 
 - Enter the username of the account you wish to create releases for (@ sign optional)
@@ -84,7 +91,11 @@ Run PressSecBotPlus with `python press_sec_bot_plus.py` , or first mark it as ex
 When run, PressSecBotPlus publishes any tweets since the last one it re-published, in proper chronological order. It will then check every five minutes for new tweets, until you quit.
 
 ### Running as a daemon process
-As PressSecBotPlus is intended to publish an ongoing stream of tweets, it is recommended that you run it as a daemon process. The best way of doing this will vary by OS. [Systemd for Ubuntu](https://wiki.ubuntu.com/SystemdForUpstartUsers), [Launchd for MacOS](https://alvinalexander.com/mac-os-x/mac-osx-startup-crontab-launchd-jobs), or [rc.d for FreeBSD](https://www.freebsd.org/doc/en/articles/rc-scripting/rcng-daemon.html) are suggested. Be careful to set the working directory to wherever `press_sec_bot_plus.py` is, as it expects other resources to be installed there.
+As PressSecBotPlus is intended to publish an ongoing stream of tweets, it is recommended that you run it as a daemon process. The best way of doing this will vary by OS. [Systemd for Ubuntu], [Launchd for MacOS][], or [rc.d for FreeBSD][] are suggested. Be careful to set the working directory to wherever `press_sec_bot_plus.py` is, as it expects other resources to be installed there.
+
+[systemd for ubuntu]: https://wiki.ubuntu.com/SystemdForUpstartUsers
+[launchd for macos]: https://alvinalexander.com/mac-os-x/mac-osx-startup-crontab-launchd-jobs
+[rc.d for freebsd]: https://www.freebsd.org/doc/en/articles/rc-scripting/rcng-daemon.html
 
 Alternatively, you can run it as a background process using `screen` or similar.
 
