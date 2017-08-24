@@ -8,7 +8,7 @@
 6. [License](#license)
 
 ## About
-Inspired by [@realPressSecBot](https://twitter.com/realPressSecBot), PressSecBotPlus is a Python based Twitter bot that will reformat tweets by a specified user into a press release type image and publish it to Twitter.
+Inspired by [@realPressSecBot](https://twitter.com/realPressSecBot), PressSecBotPlus is a Python based Twitter bot that will reformat tweets by a specified user into a press release image and publishes to Twitter.
 
 While the major function is similar, there are some specific enhancements over @realPressSecBot. The goal is to provide more context by including emoji, images and video from the original tweet, as well as a more mobile-friendly reading experience. Statements are formatted for narrower screens, and rendered at higher resolution for Retina screens.
 
@@ -26,6 +26,10 @@ While the major function is similar, there are some specific enhancements over @
 - Inline Twitter full name expansion
 - Quoted tweet formatting
 - Use the Twitter Streaming API for real-time updates, rather than polling
+
+### Samples
+<img src="sample.png" width="375px" alt="Sample press release image">
+<a href="https://twitter.com/dog_rates"><img src="sample2.jpg" width="375px" alt="Sample full tweet"></a>
 
 ## Requirements
 - A Twitter API key, and an account from which to publish tweets
