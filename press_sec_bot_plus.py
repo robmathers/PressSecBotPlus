@@ -237,8 +237,8 @@ def main():
     except (NoOptionError, NoSectionError) as e:
         last_tweet_id = None
 
-    poll_for_updates(api, account_to_follow, last_tweet_id)
-
+    release_backlog_tweets(api, account_to_follow, last_tweet_id)
+    update_from_stream(api, account_to_follow)
 
 if __name__ == "__main__":
     main()
