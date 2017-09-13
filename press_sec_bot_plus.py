@@ -206,8 +206,8 @@ def update_from_stream(api, account_to_follow, include_rts=False):
     try:
         relationship = api.LookupFriendship(screen_name=normalized_account)[0]
         if not relationship.following:
-            raise ValueError
-    except IndexError, ValueError:
+            api.CreateFriendship(screen_name=normalized_account)
+    except IndexError:
         api.CreateFriendship(screen_name=normalized_account)
 
     # Get timeline stream restricted to users the bot is following
