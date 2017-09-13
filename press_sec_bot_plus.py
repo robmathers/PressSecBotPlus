@@ -180,6 +180,25 @@ def poll_for_updates(api, account_to_follow, starting_id=None, interval=300):
         sleep(interval)
 
 
+def release_backlog_tweets(api, account_to_follow, starting_id):
+    """Release all tweets after a given tweet id, up to a maximum of 200. Repeats after each batch until no more updates are available."""
+    backlog = api.GetUserTimeline(screen_name=account_to_follow,
+                                  since_id=starting_id,
+                                  count=200,
+                                  include_rts=False)
+    while len(backlog) > 0:
+        print 'Got %d tweets starting at %d' % (len(backlog), backlog[0].id)
+        # process the list in reverse order, to preserve time-order
+        for tweet in backlog[::-1]:
+            release_tweet(tweet, api)
+            save_last_tweet(tweet.id)
+
+        backlog = api.GetUserTimeline(screen_name=account_to_follow,
+                                      since_id=tweet.id,
+                                      count=200,
+                                      include_rts=False)
+
+
 def update_from_stream(api, account_to_follow, include_rts=False):
     """Uses Twitter's streaming API to get new tweets in realtime and release them."""
     normalized_account = account_to_follow.lstrip('@')
