@@ -59,7 +59,7 @@ def render_tweet_html(tweet):
 
 
 def process_tweet_text(tweet):
-    text = tweet.full_text
+    text = tweet.full_text or tweet.text # protects against old clients
 
     for url in tweet.urls:
         text = text.replace(url.url, url.expanded_url)
