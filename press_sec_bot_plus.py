@@ -8,6 +8,7 @@ from tempfile import NamedTemporaryFile
 import os
 from io import BytesIO
 import twitter
+from twitter.models import Status
 import jinja2
 from PIL import Image
 
@@ -177,6 +178,33 @@ def poll_for_updates(api, account_to_follow, starting_id=None, interval=300):
             save_last_tweet(latest_tweet_id)
 
         sleep(interval)
+
+
+def update_from_stream(api, account_to_follow, include_rts=False):
+    """Uses Twitter's streaming API to get new tweets in realtime and release them."""
+    normalized_account = account_to_follow.lstrip('@')
+    # Check that account is being followed, otherwise it won't show up in our stream
+    try:
+        relationship = api.LookupFriendship(screen_name=normalized_account)[0]
+        if not relationship.following:
+            raise ValueError
+    except IndexError, ValueError:
+        api.CreateFriendship(screen_name=normalized_account)
+
+    # Get timeline stream restricted to users the bot is following
+    stream = api.GetUserStream(replies=None, withuser='followings')
+
+    while stream:
+        # Make a tweet out of the stream iteration
+        message = Status.NewFromJsonDict(stream.next())
+
+        # Check that message is a tweet, from watched account, and not RT or RTs allowed
+        if (message.id and
+            message.user.screen_name == normalized_account and
+            (not message.retweeted_status or include_rts)):
+
+                release_tweet(message, api)
+                save_last_tweet(message.id)
 
 
 def main():
