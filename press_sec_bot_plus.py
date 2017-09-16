@@ -71,6 +71,20 @@ def process_tweet_text(tweet):
     return jinja2.Markup(text.replace('\n', '<br>').strip())
 
 
+def convert_truncated(tweet):
+    """Converts a tweet in extended compatibility mode to a fully extended tweet.
+    These come from the Streaming API, and python-twitter will only extract a legacy style tweet.
+    See https://dev.twitter.com/overview/api/upcoming-changes-to-tweets for details and https://github.com/twitterdev/tweet-updates/blob/master/samples/initial/compatibilityplus_extended_13997.json for an example.
+
+    This hasn't been tested extensively, so may break in some cases, but seems to work so far."""
+    raw_tweet = tweet._json
+    if raw_tweet.has_key('extended_tweet'):
+        for key, value in raw_tweet['extended_tweet'].items():
+            raw_tweet[key] = value
+    converted_tweet = Status.NewFromJsonDict(raw_tweet)
+    return converted_tweet
+
+
 def html_to_png(html):
     # Use a temp file in the current working directory so that wkhtmltoimage handles relative URLs properly
     temp_file = '.temp.html'
@@ -116,6 +130,10 @@ def get_status_message():
 
 def release_tweet(tweet, api):
     """Formats and publishes a Tweet to the account"""
+
+    if tweet.truncated:
+        tweet = convert_truncated(tweet)
+
     tweet_html = render_tweet_html(tweet)
     image = html_to_png(tweet_html)
 
