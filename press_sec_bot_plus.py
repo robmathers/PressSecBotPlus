@@ -12,8 +12,10 @@ from twitter.models import Status
 import jinja2
 from PIL import Image
 
+config_file='press_sec_bot_plus.conf'
 
-def load_config(config_file='press_sec_bot_plus.conf'):
+def load_config():
+    global config_file
     config = SafeConfigParser()
     if not config.read(config_file):
         print("Couldn't load configuration.")
