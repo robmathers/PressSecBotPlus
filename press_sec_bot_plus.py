@@ -248,6 +248,11 @@ def main():
     config = load_config()
     api = api_from_config(config)
 
+    # Check that config file is writeable
+    if not os.access(config_file, os.W_OK):
+        print 'Write access to config file unavailable, exiting.'
+        sys.exit(1)
+
     account_to_follow = config.get('settings', 'account_to_follow')
 
     try:
