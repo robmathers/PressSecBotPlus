@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-from datetime import date
+from datetime import date, datetime, timedelta
 from ConfigParser import SafeConfigParser, NoOptionError, NoSectionError
 from subprocess import Popen, PIPE
 from distutils.spawn import find_executable
@@ -9,6 +9,8 @@ import os
 from io import BytesIO
 import twitter
 from twitter.models import Status
+from twitter.error import TwitterError
+from requests.exceptions import ChunkedEncodingError
 import jinja2
 from PIL import Image
 
@@ -244,6 +246,25 @@ def update_from_stream(api, account_to_follow, include_rts=False):
                 save_last_tweet(message.id)
 
 
+def within_exception_rate_limit(exception_datestamps):
+    if len(exception_datestamps) < 1:
+        return True
+
+    # Sort oldest to newest
+    exception_datestamps.sort()
+
+    # Only allow one exception per minute
+    if exception_datestamps[-1] > datetime.now() - timedelta(minutes=1):
+        return False
+
+    # Only allow 3 exceptions in the last 10 minutes
+    last_ten_minutes = filter(lambda k: k > datetime.now() - timedelta(minutes=10), exception_datestamps)
+    if len(last_ten_minutes) < 3:
+        return True
+
+    return False
+
+
 def main():
     config = load_config()
     api = api_from_config(config)
@@ -261,7 +282,15 @@ def main():
         last_tweet_id = None
 
     release_backlog_tweets(api, account_to_follow, last_tweet_id)
-    update_from_stream(api, account_to_follow)
+
+    # Catch Twitter streaming errors, ratelimited to prevent infinite respawn
+    exception_datestamps = []
+    while within_exception_rate_limit(exception_datestamps):
+        try:
+            update_from_stream(api, account_to_follow)
+        except TwitterError, ChunkedEncodingError:
+            exception_datestamps.append(datetime.now())
+
 
 if __name__ == "__main__":
     main()
