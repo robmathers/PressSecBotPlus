@@ -14,7 +14,7 @@ from requests.exceptions import ChunkedEncodingError
 import jinja2
 from PIL import Image
 
-config_file='press_sec_bot_plus.conf'
+config_file = 'press_sec_bot_plus.conf'
 
 def load_config():
     global config_file
@@ -288,7 +288,12 @@ def main():
     while within_exception_rate_limit(exception_datestamps):
         try:
             update_from_stream(api, account_to_follow)
-        except TwitterError, ChunkedEncodingError:
+        except (TwitterError, ChunkedEncodingError):
+            exception_datestamps.append(datetime.now())
+        except StopIteration:
+            from time import sleep
+            print 'Got streaming StopIteration; waiting 10 seconds to resume.'
+            sleep(10)
             exception_datestamps.append(datetime.now())
 
 
