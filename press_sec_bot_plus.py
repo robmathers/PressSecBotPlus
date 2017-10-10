@@ -247,6 +247,8 @@ def update_from_stream(api, account_to_follow, include_rts=False):
 
 
 def within_exception_rate_limit(exception_datestamps):
+    now = datetime.now()
+
     if len(exception_datestamps) < 1:
         return True
 
@@ -254,12 +256,13 @@ def within_exception_rate_limit(exception_datestamps):
     exception_datestamps.sort()
 
     # Only allow one exception per minute
-    if exception_datestamps[-1] > datetime.now() - timedelta(minutes=1):
-        return False
+    last_minute = [datestamp for datestamp in exception_datestamps if datestamp > now - timedelta(minutes=1)]
+    if len(last_minute) <= 1:
+        return True
 
     # Only allow 3 exceptions in the last 10 minutes
-    last_ten_minutes = filter(lambda k: k > datetime.now() - timedelta(minutes=10), exception_datestamps)
-    if len(last_ten_minutes) < 3:
+    last_ten_minutes = [datestamp for datestamp in exception_datestamps if datestamp > now - timedelta(minutes=10)]
+    if len(last_ten_minutes) <= 3:
         return True
 
     return False
