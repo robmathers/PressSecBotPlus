@@ -46,7 +46,7 @@
         text-align: center;
     }
     hr.end:after {
-        content: "###";
+        content: "---";
         display: inline;
     }
     .emoji {
@@ -58,15 +58,19 @@
 <script src="jQueryEmoji.min.js"></script>
 </head>
 <body>
-<h1>Actividad de {{ account }}</h1>
-<hr>
+<h1>A {{ account }} le gustó:</h1>
+<hr> 
 <h3>{{ date }}</h3>
 {{ body }}
+<h3>---</h3>
+<h3>De la cuenta @{{ from }} </h3>
 <hr class="end">
 <script>
 $(function(){
 	$('body').Emoji();
 });
+
 </script>
 </body>
 </html>
+
