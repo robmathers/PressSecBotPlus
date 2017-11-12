@@ -1,5 +1,5 @@
 [settings]
-account_to_follow = @TWITTER_ACCOUNT_HERE
+account_to_follow = @TWITTER_ACCOUNT_HERE,@OTHER_TWITTER_ACCOUNT_HERE
 # message can be blank or removed for no text
 message = TWEET_STATUS_TEXT_HERE
 
@@ -8,4 +8,5 @@ consumer_key = CONSUMER_KEY_HERE
 consumer_secret = CONSUMER_SECRET_HERE
 access_token_key = ACCESS_TOKEN_KEY_HERE
 access_token_secret = ACCESS_TOKEN_SECRET_HERE
+
 
