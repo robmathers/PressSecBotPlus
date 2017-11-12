@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title></title>
+<link href="font.css" rel="stylesheet">
+<style>
+    body {
+        font-family: import, Palatino, serif;
+        margin-left: 2em;
+        margin-right: 2em;
+        margin-top: 1em;
+        text-rendering: optimizeLegibility;
+        word-wrap: break-word;
+    }
+    h1, h2, h3 {
+        font-weight: normal;
+        margin-bottom: 0;
+        margin-top: 0;
+        font-size: 12pt;
+    }
+    h1 {
+        text-transform: uppercase;
+        text-align: center;
+
+    }
+    h2 {
+        text-align: center;
+    }
+    h3.release {
+        text-transform: uppercase;
+    }
+    h4 {
+        text-align: center;
+    }
+    hr {
+        height: 1px;
+        background-color: black;
+        border: 0;
+    }
+    hr.end {
+        margin-top: 1em;
+        height: 1em;
+        color: black;
+        background-color: white;
+        text-align: center;
+    }
+    hr.end:after {
+        content: "---";
+        display: inline;
+    }
+    .emoji {
+        height: 20px;
+        vertical-align: text-bottom;
+    }
+</style>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="jQueryEmoji.min.js"></script>
+</head>
+<body>
+<h1>A {{ account }} le gustó:</h1>
+<hr> 
+<h3>{{ date }}</h3>
+{{ body }}
+<h3>---</h3>
+<h3>De la cuenta @{{ from }} </h3>
+<hr class="end">
+<script>
+$(function(){
+	$('body').Emoji();
+});
+
+</script>
+</body>
+</html>
+

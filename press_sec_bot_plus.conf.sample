@@ -2,6 +2,7 @@
 account_to_follow = @TWITTER_ACCOUNT_HERE,@OTHER_TWITTER_ACCOUNT_HERE
 # message can be blank or removed for no text
 message = TWEET_STATUS_TEXT_HERE
+like_message = TEXT FOR A LIKE
 
 [twitter_api]
 consumer_key = CONSUMER_KEY_HERE

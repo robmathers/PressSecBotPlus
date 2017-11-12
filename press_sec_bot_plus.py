@@ -13,6 +13,8 @@ from twitter.error import TwitterError
 from requests.exceptions import ChunkedEncodingError
 import jinja2
 from PIL import Image
+#My own requirements
+
 
 config_file = 'press_sec_bot_plus.conf'
 
@@ -31,12 +33,13 @@ def save_config(config):
         config.write(f)
 
 
-def save_last_tweet(tweet_id,account_to_follow):
+def save_last_tweet(tweet_id,key_id,account_to_follow):
     config = load_config()
     if not config.has_section('saved_state'):
         config.add_section('saved_state')
-    config.set('saved_state', 'last_tweet_id'+account_to_follow, str(tweet_id))
+    config.set('saved_state', key_id + account_to_follow, str(tweet_id))
     save_config(config)
+
 
 
 def api_from_config(config):
@@ -60,6 +63,19 @@ def render_tweet_html(tweet,account_to_follow):
     return jinja2.Environment(
         loader=jinja2.FileSystemLoader('./')
     ).get_template('release_template.html').render(context)
+
+def render_tweet_like_html(tweet,account_to_follow):
+    date_format = '%d/%m/%Y'
+    print tweet.user.screen_name
+    context = {
+        'body': process_tweet_text(tweet),
+        'date': date.fromtimestamp(tweet.created_at_in_seconds).strftime(date_format),
+        'account': account_to_follow,
+        'from': tweet.user.screen_name
+    }
+    return jinja2.Environment(
+        loader=jinja2.FileSystemLoader('./')
+    ).get_template('release_like_template.html').render(context)
 
 
 def process_tweet_text(tweet):
@@ -131,6 +147,14 @@ def get_status_message():
 
     return message
 
+def get_like_message():
+    try:
+        message = load_config().get('settings', 'like_message')
+    except (NoOptionError, NoSectionError) as e:
+        message = ''
+
+    return message
+
 def release_tweet(tweet,account_to_follow, api):
     """Formats and publishes a Tweet to the account"""
 
@@ -141,6 +165,52 @@ def release_tweet(tweet,account_to_follow, api):
     image = html_to_png(tweet_html)
 
     status = get_status_message()
+    media = []
+
+    # Max 4 photos, or 1 video or 1 GIF
+
+    for media_item in tweet.media or []:
+        extra_media_url = 'https://twitter.com/%s/status/%d' % (tweet.user.screen_name, tweet.id)
+        if media_item.type == 'video':
+            if status != '':
+                status += '\n'
+            status += '[Video: %s]' % extra_media_url
+
+        elif media_item.type == 'animated_gif':
+            if status != '':
+                status += '\n'
+            status += '[GIF: %s]' % extra_media_url
+
+        elif media_item.type == 'photo':
+            if len(media) < 3:
+                media.append(media_item.media_url_https)
+
+                # Use large photo size if available
+                if media_item.sizes.has_key('large'):
+                    media[-1] += ':large'
+            else:
+                if status != '':
+                    status += '\n'
+                status += '[Photo: %s]' % extra_media_url
+
+    print(status)
+    print(media)
+
+    with NamedTemporaryFile(suffix='.png') as png_file:
+        image.save(png_file, format='PNG', dpi=(144,144))
+        media.insert(0, png_file)
+        api.PostUpdate(status=status, media=media)
+
+def release_tweet_like(tweet,account_to_follow, api):
+    """Formats and publishes a Tweet to the account"""
+
+    if tweet.truncated:
+        tweet = convert_truncated(tweet)
+
+    tweet_html = render_tweet_like_html(tweet,account_to_follow)
+    image = html_to_png(tweet_html)
+
+    status = get_like_message()
     media = []
 
     # Max 4 photos, or 1 video or 1 GIF
@@ -196,7 +266,7 @@ def poll_for_updates(api, account_to_follow, starting_id=None, interval=300):
 
         if len(new_tweets) > 0:
             latest_tweet_id = new_tweets[0].id
-            save_last_tweet(latest_tweet_id,account_to_follow)
+            save_last_tweet(latest_tweet_id,'last_tweet_id',account_to_follow)
 
         sleep(interval)
 
@@ -212,7 +282,7 @@ def release_backlog_tweets(api, account_to_follow, starting_id):
         # process the list in reverse order, to preserve time-order
         for tweet in backlog[::-1]:
             release_tweet(tweet, account_to_follow, api)
-            save_last_tweet(tweet.id,account_to_follow)
+            save_last_tweet(tweet.id,'last_tweet_id',account_to_follow)
 
         backlog = api.GetUserTimeline(screen_name=account_to_follow,
                                       since_id=tweet.id,
@@ -244,7 +314,30 @@ def update_from_stream(api, account_to_follow, include_rts=False):
             (not message.retweeted_status or include_rts)):
 
                 release_tweet(message,account_to_follow, api)
-                save_last_tweet(message.id, account_to_follow)
+                save_last_tweet(message.id, 'last_tweet_id',account_to_follow)
+
+def get_likes(api,account_to_follow,last_like_id):
+    count = 20
+    results = []
+    try:
+        if last_like_id == None:
+            results = api.GetFavorites(screen_name = account_to_follow, count = count)
+        else:
+            results = api.GetFavorites(screen_name = account_to_follow, count = count,since_id=last_like_id)
+    except:
+        print "error getting favorites", sys.exc_info()
+        results = api.GetFavorites(screen_name = account_to_follow, count = count)
+
+    for message in results:
+        release_tweet_like(message,account_to_follow, api)
+        if message.id > last_like_id:
+            last_like_id = message.id
+
+    save_last_tweet(last_like_id,'last_like_id', account_to_follow)
+    print last_like_id, "liked id saved"
+
+
+
 
 
 def within_exception_rate_limit(exception_datestamps):
@@ -272,7 +365,6 @@ def within_exception_rate_limit(exception_datestamps):
 def main():
     config = load_config()
     api = api_from_config(config)
-    last_tweet_id ={}
     # Check that config file is writeable
     if not os.access(config_file, os.W_OK):
         print 'Write access to config file unavailable, exiting.'
@@ -282,21 +374,28 @@ def main():
 
     for account_to_follow in accounts_to_follow.split(","):
         try:
-            last_tweet_id[account_to_follow] = int(config.get('saved_state', 'last_tweet_id'+account_to_follow))
+            last_tweet_id = int(config.get('saved_state', 'last_tweet_id'+account_to_follow))
             print account_to_follow
-            release_backlog_tweets(api, account_to_follow, last_tweet_id[account_to_follow])
+            release_backlog_tweets(api, account_to_follow, last_tweet_id)
         except (NoOptionError, NoSectionError) as e:
             last_tweet_id = None
 
+        try:
+            last_like_id= int(config.get('saved_state', 'last_like_id'+account_to_follow))
+        except (NoOptionError, NoSectionError) as e:
+            last_like_id = None
 
+        print account_to_follow
+        get_likes(api,account_to_follow,last_like_id)
 
     # Catch Twitter streaming errors, ratelimited to prevent infinite respawn
-    exception_datestamps = []
-    #while within_exception_rate_limit(exception_datestamps):
+    """exception_datestamps = []
+    while within_exception_rate_limit(exception_datestamps):
     if(True):
         try:
             for account_to_follow in accounts_to_follow.split(","):
                 update_from_stream(api, account_to_follow)
+
 
         except (TwitterError, ChunkedEncodingError):
             exception_datestamps.append(datetime.now())
@@ -304,7 +403,7 @@ def main():
             from time import sleep
             print 'Got streaming StopIteration; waiting 10 seconds to resume.'
             sleep(10)
-            exception_datestamps.append(datetime.now())
+            exception_datestamps.append(datetime.now())"""
 
 
 if __name__ == "__main__":
