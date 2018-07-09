@@ -284,20 +284,7 @@ def main():
     except (NoOptionError, NoSectionError) as e:
         last_tweet_id = None
 
-    release_backlog_tweets(api, account_to_follow, last_tweet_id)
-
-    # Catch Twitter streaming errors, ratelimited to prevent infinite respawn
-    exception_datestamps = []
-    while within_exception_rate_limit(exception_datestamps):
-        try:
-            update_from_stream(api, account_to_follow)
-        except (TwitterError, ChunkedEncodingError):
-            exception_datestamps.append(datetime.now())
-        except StopIteration:
-            from time import sleep
-            print 'Got streaming StopIteration; waiting 10 seconds to resume.'
-            sleep(10)
-            exception_datestamps.append(datetime.now())
+    poll_for_updates(api, account_to_follow, last_tweet_id, 30)
 
 
 if __name__ == "__main__":
