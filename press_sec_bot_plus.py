@@ -168,8 +168,11 @@ def release_tweet(tweet, api):
                     status += '\n'
                 status += '[Photo: %s]' % extra_media_url
 
-    print(status)
-    print(media)
+    print('Published Tweet {id} at {date}'.format(id=tweet.id, date=datetime.now()))
+    if status:
+        print(status)
+    if media:
+        print(media)
 
     with NamedTemporaryFile(suffix='.png') as png_file:
         image.save(png_file, format='PNG', dpi=(144,144))
@@ -269,6 +272,7 @@ def within_exception_rate_limit(exception_datestamps):
 
 
 def main():
+    print('Launched at {}'.format(datetime.now()))
     config = load_config()
     api = api_from_config(config)
 
